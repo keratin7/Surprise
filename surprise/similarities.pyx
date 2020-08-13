@@ -67,6 +67,8 @@ def cosine(n_x, yr, min_support):
 
     cdef int xi, xj
     cdef double ri, rj
+    cdef double avg_rat 
+    cdef double rating
     cdef int min_sprt = min_support
 
     prods = np.zeros((n_x, n_x), np.double)
@@ -76,12 +78,13 @@ def cosine(n_x, yr, min_support):
     sim = np.zeros((n_x, n_x), np.double)
 
     for y, y_ratings in iteritems(yr):
+        avg_rat = np.mean([rating for (_,rating) in y_ratings])
         for xi, ri in y_ratings:
             for xj, rj in y_ratings:
                 freq[xi, xj] += 1
-                prods[xi, xj] += ri * rj
-                sqi[xi, xj] += ri**2
-                sqj[xi, xj] += rj**2
+                prods[xi, xj] += (ri - avg_rat) * (rj - avg_rat)
+                sqi[xi, xj] += (ri - avg_rat)**2
+                sqj[xi, xj] += (rj - avg_rat)**2
 
     for xi in range(n_x):
         sim[xi, xi] = 1
